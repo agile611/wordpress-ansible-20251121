@@ -3,3 +3,8 @@
   become: yes
   roles:
     - database
+
+- hosts: webserver
+  become: yes
+  roles:
+    - webserver

@@ -1,3 +1,67 @@
-#SPDX-License-Identifier: MIT-0
 ---
-# tasks file for webserver
+- name: Instalar los paquetes del webserver
+  ansible.builtin.apt:
+    name: "{{ packages_webserver }}"
+    state: present
+    update_cache: yes
+  loop: "{{ packages_webserver }}"
+  notify: Reiniciar Apache
+
+- name: Verificar que PHP está instalado
+  ansible.builtin.command: php -v
+  register: php_version
+  changed_when: false
+
+- name: Mostrar versión de PHP instalada
+  ansible.builtin.debug:
+    msg: "Versión de PHP instalada: {{ php_version.stdout }}"
+
+- name: Descargar Wordpress
+  ansible.builtin.get_url:
+    url: "{{ wordpress_url }}"
+    dest: /tmp/wordpress.zip
+    mode: '0644'
+  register: download_wordpress
+  until: download_wordpress is succeeded
+  retries: 3
+  delay: 10
+
+- name: Descomprimir Wordpress
+  ansible.builtin.unarchive:
+    src: /tmp/wordpress.zip
+    dest: /var/www/html/
+    remote_src: yes
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  notify: Reiniciar Apache
+
+- name: Configurar wp-config.php
+  ansible.builtin.template:
+    src: wp-config.php.j2
+    dest: /var/www/html/wordpress/wp-config.php
+    owner: www-data
+    group: www-data
+    mode: '0644'
+  notify: Reiniciar Apache
+
+- name: Copiar VirtualHost de Apache
+  template:
+    src: vhosts.conf.j2
+    dest: /etc/apache2/sites-available/wordpress.conf
+  notify: Reiniciar Apache
+
+- name: Habilitar el sitio de WordPress
+  shell: a2ensite wordpress
+
+- name: Habilitar el módulo de reescritura de Apache
+  shell: a2enmod rewrite
+
+- name: Deshabilitar el sitio por defecto de Apache
+  shell: a2dissite 000-default
+
+- name: Asegurar que Apache esté iniciado y habilitado
+  ansible.builtin.service:
+    name: apache2
+    state: started
+    enabled: yes
