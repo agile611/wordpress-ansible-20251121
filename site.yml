@@ -1,5 +1,5 @@
 ---
-- hosts: packages_database
+- hosts: database
   become: yes
   roles:
     - database
