@@ -8,3 +8,8 @@
   become: yes
   roles:
     - webserver
+
+- hosts: loadbalancer
+  become: yes
+  roles:
+    - loadbalancer

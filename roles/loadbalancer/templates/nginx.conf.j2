@@ -1,0 +1,11 @@
+upstream demo {
+    server 192.168.11.40;
+}
+
+server {
+    listen 80;
+
+    location / {
+        proxy_pass http://demo;
+    }
+}

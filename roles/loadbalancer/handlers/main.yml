@@ -1,3 +1,7 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # handlers file for loadbalancer
+- name: Reiniciar el servicio del balanceador de carga
+  ansible.builtin.service:
+    name: nginx
+    state: restarted

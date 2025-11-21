@@ -1,3 +1,20 @@
-#SPDX-License-Identifier: MIT-0
 ---
-# tasks file for loadbalancer
+- name: Instalar los paquetes del balanceador de carga
+  ansible.builtin.apt:
+    name: "{{ packages_loadbalancer }}"
+    state: present
+    update_cache: yes
+  loop: "{{ packages_loadbalancer }}"
+  notify: Reiniciar el servicio del balanceador de carga
+
+- name: configure nginx site
+  template: src=nginx.conf.j2 dest=/etc/nginx/sites-available/demo mode=0644
+  notify: Reiniciar el servicio del balanceador de carga
+
+- name: de-activate default nginx site
+  file: path=/etc/nginx/sites-enabled/default state=absent
+  notify: Reiniciar el servicio del balanceador de carga
+
+- name: activate demo nginx site
+  file: src=/etc/nginx/sites-available/demo dest=/etc/nginx/sites-enabled/demo state=link
+  notify: Reiniciar el servicio del balanceador de carga

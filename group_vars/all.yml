@@ -28,5 +28,5 @@ packages_database:
   - mysql-server
   - python3-pip
   - python3-pymysql
-packager_loadbalancer:
+packages_loadbalancer:
   - nginx
