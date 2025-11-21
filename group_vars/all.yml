@@ -17,5 +17,7 @@ packages_webserver:
   - wget
 packages_database:
   - mysql-server
+  - python3-pip
+  - python3-pymysql
 packager_loadbalancer:
   - nginx

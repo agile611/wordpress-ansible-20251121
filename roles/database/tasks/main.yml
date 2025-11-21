@@ -7,28 +7,37 @@
   loop: "{{ packages_database }}"
   notify: Reiniciar el servicio de la base de datos
 
+- name: chmod cnf
+  command: chmod 777 /etc/mysql/my.cnf
+
+- name: ensure mysql listening on all ports
+  lineinfile: dest=/etc/mysql/my.cnf regexp=^bind-address line="bind-address = 0.0.0.0"
+  notify: Reiniciar el servicio de la base de datos
+
 - name: Asegurarse de que el servicio de la base de datos esté en ejecución
   ansible.builtin.service:
     name: mysql
     state: started
     enabled: yes
 
-- name: Configurar la contraseña del root de MySQL
+- name: "Setear la contraseña del usuario root de MySQL (solo si no está configurada)"
   community.mysql.mysql_user:
     login_user: root
-    login_password: ""
-    name: root
-    password: "{{ db_root_password }}"
-    host_all: yes
+    login_password: 
+    name: root  
+    password: "{{ vault_db_root_password }}"
+    host: "%"
+    host_all: yes  
     state: present
-  when: db_root_password is defined
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  when : vault_db_root_password != ""
 
 - name: Crear la base de datos de WordPress
   community.mysql.mysql_db:
     name: "{{ db_name }}"
     state: present
     login_user: root
-    login_password: "{{ db_root_password }}"
+    login_password: "{{ vault_db_root_password }}"
 
 - name: Crear el usuario de la base de datos de WordPress
   community.mysql.mysql_user:
@@ -37,4 +46,4 @@
     priv: "{{ db_name }}.*:ALL"
     state: present
     login_user: root
-    login_password: "{{ db_root_password }}"
+    login_password: "{{ vault_db_root_password }}"
