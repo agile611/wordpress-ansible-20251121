@@ -1,3 +1,40 @@
-#SPDX-License-Identifier: MIT-0
 ---
-# tasks file for database
+- name: Instalar los paquetes de la base de datos
+  ansible.builtin.apt:
+    name: "{{ packages_database }}"
+    state: present
+    update_cache: yes
+  loop: "{{ packages_database }}"
+  notify: Reiniciar el servicio de la base de datos
+
+- name: Asegurarse de que el servicio de la base de datos esté en ejecución
+  ansible.builtin.service:
+    name: mysql
+    state: started
+    enabled: yes
+
+- name: Configurar la contraseña del root de MySQL
+  community.mysql.mysql_user:
+    login_user: root
+    login_password: ""
+    name: root
+    password: "{{ db_root_password }}"
+    host_all: yes
+    state: present
+  when: db_root_password is defined
+
+- name: Crear la base de datos de WordPress
+  community.mysql.mysql_db:
+    name: "{{ db_name }}"
+    state: present
+    login_user: root
+    login_password: "{{ db_root_password }}"
+
+- name: Crear el usuario de la base de datos de WordPress
+  community.mysql.mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    priv: "{{ db_name }}.*:ALL"
+    state: present
+    login_user: root
+    login_password: "{{ db_root_password }}"

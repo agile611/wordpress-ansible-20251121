@@ -1,3 +1,5 @@
-#SPDX-License-Identifier: MIT-0
 ---
-# handlers file for database
+- name: Reiniciar el servicio de la base de datos
+  ansible.builtin.service:
+    name: mysql
+    state: restarted
