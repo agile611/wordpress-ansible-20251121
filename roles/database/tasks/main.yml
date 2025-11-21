@@ -23,7 +23,7 @@
 - name: "Setear la contraseña del usuario root de MySQL (solo si no está configurada)"
   community.mysql.mysql_user:
     login_user: root
-    login_password: 
+    login_password: "{{ vault_db_root_password }}"
     name: root  
     password: "{{ vault_db_root_password }}"
     host: "%"
