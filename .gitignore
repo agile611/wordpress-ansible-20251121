@@ -1,0 +1,49 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# PHP
+/vendor/
+/composer.phar
+/.phpunit.result.cache
+.php_cs.cache
+.php_cs.dist
+.env
+.env.*.local
+*.log
+*.cache
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+env/
+venv/
+.venv/
+pip-wheel-metadata/
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.tox/
+.coverage
+htmlcov/
+
+# IDEs and editors
+.idea/
+*.swp
+*~
