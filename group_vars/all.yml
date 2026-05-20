@@ -14,6 +14,8 @@ mysql_port: 3306
 lb_port: 80
 http_port: 80
 https_port: 443
+wp_install_dir: "/var/www/html/wordpress"
+wp_site_url: "http://192.168.11.40"
 packages_webserver:
   - apache2
   - php
