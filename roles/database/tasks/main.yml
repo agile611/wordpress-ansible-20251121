@@ -6,7 +6,6 @@
     update_cache: yes
   notify: Reiniciar MySQL
 
-# ✅ FIX 1: Corregir permisos de my.cnf (777 fa que MySQL l'ignori)
 - name: Corregir permisos de /etc/mysql/my.cnf
   ansible.builtin.file:
     path: /etc/mysql/my.cnf
@@ -14,7 +13,6 @@
     group: root
     mode: '0644'
 
-# ✅ FIX 2: Reescriure my.cnf sense bind-address (va a mysqld.cnf)
 - name: Configurar /etc/mysql/my.cnf correctament
   ansible.builtin.copy:
     dest: /etc/mysql/my.cnf
@@ -49,7 +47,18 @@
 - name: Flush handlers (reinicia MySQL abans de crear usuaris)
   ansible.builtin.meta: flush_handlers
 
-# ✅ FIX 3: Usar login_password en lloc de login_unix_socket
+# ✅ Crear /root/.my.cnf perquè community.mysql pugui autenticar-se
+- name: Crear /root/.my.cnf amb credencials de root
+  ansible.builtin.copy:
+    dest: /root/.my.cnf
+    content: |
+      [client]
+      user=root
+      password={{ db_root_password }}
+    owner: root
+    group: root
+    mode: '0600'
+
 - name: Crear la base de dades de WordPress
   community.mysql.mysql_db:
     name: "{{ db_name }}"
@@ -66,3 +75,9 @@
     state: present
     login_user: root
     login_password: "{{ db_root_password }}"
+
+# ✅ Eliminar /root/.my.cnf per seguretat un cop acabat
+- name: Eliminar /root/.my.cnf per seguretat
+  ansible.builtin.file:
+    path: /root/.my.cnf
+    state: absent
