@@ -1,5 +1,6 @@
 ---
 wordpress_version: "6.8.3"
+wp_version: "{{ wordpress_version }}"
 wordpress_url: "https://wordpress.org/wordpress-{{ wordpress_version }}.zip"
 db_root_password: "{{ vault_db_root_password }}"
 db_name: "wordpress"
