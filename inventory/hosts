@@ -1,16 +1,12 @@
-[database] # Definir el grupo de bases de datos
-ansible_host: 192.168.11.20
-ansible_user: vagrant
-ansible_connection: ssh
+[database]
+192.168.11.20
 
+[webserver]
+192.168.11.40
 
-[loadbalancer] # Definir el grupo de balanceadores de carga
-ansible_host: 192.168.11.30
-ansible_user: vagrant
-ansible_connection: ssh
+[loadbalancer]
+192.168.11.30
 
-
-[webserver] # Definir el grupo de servidores web
-ansible_host: 192.168.11.40
-ansible_user: vagrant
+[all:vars]
+ansible_user=vagrant
 ansible_connection: ssh

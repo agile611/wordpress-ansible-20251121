@@ -1,20 +1,31 @@
 ---
-- name: Instalar los paquetes del balanceador de carga
+- name: Instalar Nginx
   ansible.builtin.apt:
     name: "{{ packages_loadbalancer }}"
     state: present
     update_cache: yes
-  loop: "{{ packages_loadbalancer }}"
-  notify: Reiniciar el servicio del balanceador de carga
 
-- name: configure nginx site
-  template: src=nginx.conf.j2 dest=/etc/nginx/sites-available/demo mode=0644
-  notify: Reiniciar el servicio del balanceador de carga
+- name: Copiar configuració de Nginx
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/wordpress
+  notify: Reiniciar Nginx
 
-- name: de-activate default nginx site
-  file: path=/etc/nginx/sites-enabled/default state=absent
-  notify: Reiniciar el servicio del balanceador de carga
+- name: Activar el site de WordPress a Nginx
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/wordpress
+    dest: /etc/nginx/sites-enabled/wordpress
+    state: link
+  notify: Reiniciar Nginx
 
-- name: activate demo nginx site
-  file: src=/etc/nginx/sites-available/demo dest=/etc/nginx/sites-enabled/demo state=link
-  notify: Reiniciar el servicio del balanceador de carga
+- name: Eliminar el site per defecte de Nginx
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reiniciar Nginx
+
+- name: Assegurar que Nginx està en execució
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: yes
